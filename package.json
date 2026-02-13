@@ -1,0 +1,14 @@
+{
+  "name": "drink-tracker",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "setup:dynamodb": "docker exec drink-lambda node setup-dynamodb.mjs",
+    "docker:up": "docker-compose up -d",
+    "invoke": "docker exec drink-lambda node invoke.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.540.0",
+    "@aws-sdk/lib-dynamodb": "^3.540.0"
+  }
+}
