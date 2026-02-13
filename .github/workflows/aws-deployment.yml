@@ -23,7 +23,12 @@ jobs:
 
       - name: Zip Lambda package
         run: |
+          rm -f lambda.zip
           zip -r lambda.zip src package.json node_modules
+
+      - name: Verify zip contents
+        run: |
+          unzip -l lambda.zip | grep "src/handler"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -32,17 +37,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Generate S3 key with commit hash
+        id: s3key
+        run: echo "value=lambda-${{ github.sha }}.zip" >> $GITHUB_OUTPUT
+
       - name: Upload Lambda artifact to S3
         run: |
-          aws s3 cp lambda.zip s3://${{ secrets.DEPLOYMENT_BUCKET }}/lambda.zip
+          aws s3 cp lambda.zip s3://${{ secrets.DEPLOYMENT_BUCKET }}/${{ steps.s3key.outputs.value }}
 
       - name: Deploy CloudFormation stack
         run: |
           aws cloudformation deploy \
             --template-file template.yml \
             --stack-name drink-tracker \
-            --capabilities CAPABILITY_IAM \
-            --parameter-overrides DeploymentBucket=${{ secrets.DEPLOYMENT_BUCKET }}
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides DeploymentBucket=${{ secrets.DEPLOYMENT_BUCKET }} LambdaS3Key=${{ steps.s3key.outputs.value }}
 
       - name: Describe stack outputs
         run: |
