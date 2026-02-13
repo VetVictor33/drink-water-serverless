@@ -78,7 +78,7 @@ Resources:
     Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref ApiGateway
-      RouteKey: "POST /drink"
+      RouteKey: "GET /drink"
       Target: !Join
         - /
         - - integrations
