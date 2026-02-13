@@ -41,6 +41,10 @@ jobs:
         id: s3key
         run: echo "value=lambda-${{ github.sha }}.zip" >> $GITHUB_OUTPUT
 
+      - name: Clean old Lambda files from S3
+        run: |
+          aws s3 rm s3://${{ secrets.DEPLOYMENT_BUCKET }}/ --recursive --exclude "*" --include "lambda-*.zip"
+
       - name: Upload Lambda artifact to S3
         run: |
           aws s3 cp lambda.zip s3://${{ secrets.DEPLOYMENT_BUCKET }}/${{ steps.s3key.outputs.value }}
