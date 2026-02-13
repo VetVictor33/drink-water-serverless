@@ -37,19 +37,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "value=$(date +%s)" >> $GITHUB_OUTPUT
+
       - name: Upload Lambda artifact to S3
         run: |
-          TIMESTAMP=$(date +%s)
-          aws s3 cp lambda.zip s3://${{ secrets.DEPLOYMENT_BUCKET }}/lambda-${TIMESTAMP}.zip
+          aws s3 cp lambda.zip s3://${{ secrets.DEPLOYMENT_BUCKET }}/lambda-${{ steps.timestamp.outputs.value }}.zip
 
       - name: Deploy CloudFormation stack
         run: |
-          TIMESTAMP=$(date +%s)
           aws cloudformation deploy \
             --template-file template.yml \
             --stack-name drink-tracker \
             --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides DeploymentBucket=${{ secrets.DEPLOYMENT_BUCKET }} LambdaS3Key=lambda-${TIMESTAMP}.zip
+            --parameter-overrides DeploymentBucket=${{ secrets.DEPLOYMENT_BUCKET }} LambdaS3Key=lambda-${{ steps.timestamp.outputs.value }}.zip
 
       - name: Describe stack outputs
         run: |
