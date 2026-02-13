@@ -1,31 +1,7 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-  DynamoDBDocumentClient,
-  GetCommand,
-  UpdateCommand,
-} from "@aws-sdk/lib-dynamodb";
-
-const isOffline = process.env.IS_OFFLINE === "true";
-
-const client = new DynamoDBClient(
-  isOffline
-    ? {
-        region: "sa-east-1",
-        endpoint: "http://dynamodb:8000",
-        credentials: {
-          accessKeyId: "local",
-          secretAccessKey: "local",
-        },
-      }
-    : {
-        region: process.env.AWS_REGION || "sa-east-1",
-      },
-);
-
-const dynamo = DynamoDBDocumentClient.from(client);
-
-const TABLE_NAME = process.env.TABLE_NAME;
-const ID = "global";
+import { GetCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { dynamo } from "./dynamodb.mjs";
+import { TABLE_NAME, ID } from "./constants.mjs";
+import { response } from "./utils.mjs";
 
 export const handler = async (event) => {
   try {
@@ -70,11 +46,3 @@ export const handler = async (event) => {
     return response(500, { message: "Internal Server Error" });
   }
 };
-
-function response(statusCode, body) {
-  return {
-    statusCode,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  };
-}
