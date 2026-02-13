@@ -59,7 +59,6 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: DrinkTracker
-          AWS_REGION: !Ref AWS::Region
 
   ApiGateway:
     Type: AWS::ApiGatewayV2::Api
