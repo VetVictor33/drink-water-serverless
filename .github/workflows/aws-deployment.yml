@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "src/**"
+      - "template.yml"
+      - ".github/workflows/aws-deployment.yml"
+      - "package.json"
 
 jobs:
   deploy:
