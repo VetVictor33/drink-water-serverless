@@ -23,7 +23,12 @@ jobs:
 
       - name: Zip Lambda package
         run: |
+          rm -f lambda.zip
           zip -r lambda.zip src package.json node_modules
+
+      - name: Verify zip contents
+        run: |
+          unzip -l lambda.zip | grep "src/handler"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
