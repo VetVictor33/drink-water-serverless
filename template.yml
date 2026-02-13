@@ -5,6 +5,10 @@ Parameters:
   DeploymentBucket:
     Type: String
     Description: S3 bucket containing the Lambda deployment package
+  LambdaS3Key:
+    Type: String
+    Default: lambda.zip
+    Description: S3 key for the Lambda deployment package
 
 Resources:
   DrinkTable:
@@ -55,7 +59,7 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Code:
         S3Bucket: !Ref DeploymentBucket
-        S3Key: lambda.zip
+        S3Key: !Ref LambdaS3Key
       Environment:
         Variables:
           TABLE_NAME: DrinkTracker

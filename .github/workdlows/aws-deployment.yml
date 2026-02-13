@@ -34,15 +34,17 @@ jobs:
 
       - name: Upload Lambda artifact to S3
         run: |
-          aws s3 cp lambda.zip s3://${{ secrets.DEPLOYMENT_BUCKET }}/lambda.zip
+          TIMESTAMP=$(date +%s)
+          aws s3 cp lambda.zip s3://${{ secrets.DEPLOYMENT_BUCKET }}/lambda-${TIMESTAMP}.zip
 
       - name: Deploy CloudFormation stack
         run: |
+          TIMESTAMP=$(date +%s)
           aws cloudformation deploy \
             --template-file template.yml \
             --stack-name drink-tracker \
             --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides DeploymentBucket=${{ secrets.DEPLOYMENT_BUCKET }}
+            --parameter-overrides DeploymentBucket=${{ secrets.DEPLOYMENT_BUCKET }} LambdaS3Key=lambda-${TIMESTAMP}.zip
 
       - name: Describe stack outputs
         run: |
