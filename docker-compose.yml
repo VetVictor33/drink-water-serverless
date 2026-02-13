@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  dynamodb:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+
+  lambda:
+    image: node:22
+    container_name: drink-lambda
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install && sleep infinity"
+    depends_on:
+      - dynamodb
+    environment:
+      - IS_OFFLINE=true
+      - TABLE_NAME=DrinkTracker
+      - AWS_REGION=sa-east-1
