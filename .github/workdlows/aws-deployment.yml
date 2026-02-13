@@ -41,7 +41,7 @@ jobs:
           aws cloudformation deploy \
             --template-file template.yml \
             --stack-name drink-tracker \
-            --capabilities CAPABILITY_NAMED_IAM \
+            --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
             --parameter-overrides DeploymentBucket=${{ secrets.DEPLOYMENT_BUCKET }}
 
       - name: Describe stack outputs
