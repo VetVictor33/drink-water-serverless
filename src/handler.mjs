@@ -18,17 +18,13 @@ const client = new DynamoDBClient(
         },
       }
     : {
-        region: "sa-east-1",
-        credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID || "fake",
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "fake",
-        },
+        region: process.env.AWS_REGION || "sa-east-1",
       },
 );
 
 const dynamo = DynamoDBDocumentClient.from(client);
 
-const TABLE_NAME = "DrinkTracker";
+const TABLE_NAME = process.env.TABLE_NAME;
 const ID = "global";
 
 export const handler = async (event) => {
